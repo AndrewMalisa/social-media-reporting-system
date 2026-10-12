@@ -18,9 +18,23 @@ Private login, four social platforms, post URL validation, manual data entry, KP
 
 This version DOES NOT automatically fetch metrics. URL validation only identifies the platform. APIs and provider credentials will be needed for any automated fetching. Public post URLs alone do not generally reveal private reach, followers gained, or ad spend. Do not enter platform passwords into this app.
 
-## Hosting
+## Deploy to Vercel
 
-`render.yaml` is included. Add secure environment variables when deploying. Render free service storage is ephemeral, so SQLite records may disappear on redeploy or restart. Use a persistent PostgreSQL database or paid persistent disk for production. For initial tests, export CSV frequently.
+1. Create a PostgreSQL database in [Neon](https://neon.tech/) and copy its pooled connection string.
+2. In [Vercel](https://vercel.com/new), import this GitHub repository. Vercel detects the FastAPI app automatically.
+3. Add these environment variables to the Vercel project for Production (and Preview if needed):
+   - `DATABASE_URL`: the Neon connection string.
+   - `APP_USERNAME`: your administrator username.
+   - `APP_PASSWORD`: a strong, unique password.
+   - `SESSION_SECRET`: generate with `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+   - `COOKIE_SECURE`: `true`.
+4. Deploy the project. Vercel will create the posts table in PostgreSQL on startup.
+
+Do not upload `.env` or put credentials in source control. Vercel deployments use PostgreSQL when `DATABASE_URL` is set; local development continues to use `reports.db` by default. Existing local SQLite records are not copied to Neon automatically. `render.yaml` is also included for Render deployment.
+
+## Hosting notes
+
+Vercel runs this FastAPI app as a serverless function. Use PostgreSQL for persistent records; the local SQLite database is only for development and is not suitable for Vercel's ephemeral filesystem.
 
 ## Security
 
