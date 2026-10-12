@@ -19,6 +19,8 @@ import secrets
 BASE = Path(__file__).resolve().parent
 load_dotenv(BASE / '.env')
 DATABASE_URL = os.getenv('DATABASE_URL', '')
+if os.getenv('VERCEL') == '1' and not DATABASE_URL:
+    raise RuntimeError('Set DATABASE_URL to a persistent PostgreSQL connection when deploying to Vercel')
 USERNAME = os.getenv('APP_USERNAME', 'admin')
 PASSWORD = os.getenv('APP_PASSWORD', '')
 SECRET = os.getenv('SESSION_SECRET', '')
